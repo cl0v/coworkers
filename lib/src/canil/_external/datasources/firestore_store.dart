@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 
 class FirestoreStoreImpl implements StoreDatasource {
   final FirebaseFirestore firestore;
-  final String collectionPath = "${kDebugMode ? 'dev_' : null}stores";
+  final String collectionPath = kDebugMode ? 'dev_stores' : 'stores';
 
   FirestoreStoreImpl(this.firestore);
 
