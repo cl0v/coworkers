@@ -17,8 +17,11 @@ class _AddCanilPageState extends State<AddCanilPage> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController instagramController = TextEditingController();
+  final TextEditingController breedController = TextEditingController();
   final TextEditingController cepController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
+
+  String? breed;
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
@@ -31,6 +34,8 @@ class _AddCanilPageState extends State<AddCanilPage> {
             children: [
           const Text("Nome do canil"),
           TextFormField(controller: nameController),
+          const Text("Raça"),
+          TextFormField(controller: breedController),
           const Text("Telefone"),
           TextFormField(controller: phoneController),
           const Text("Instagram"),
@@ -74,7 +79,10 @@ class _AddCanilPageState extends State<AddCanilPage> {
                 //   toastLength: Toast.LENGTH_LONG,
                 //   gravity: ToastGravity.BOTTOM,
                 // );
+                breed = breedController.text;
                 formKey.currentState!.reset();
+
+                breedController.text = breed ?? "";
               },
               child: const Text("Cadastrar")),
         ]
