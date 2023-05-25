@@ -4,6 +4,7 @@ import 'package:coworkers/src/canil/_infra/repositories/store.dart';
 import 'package:coworkers/src/canil/domain/entities/store.dart';
 import 'package:coworkers/src/canil/feats/add/domain/usecases/add_store.dart';
 import 'package:flutter/material.dart';
+import 'package:toast/toast.dart';
 
 class AddCanilPage extends StatefulWidget {
   const AddCanilPage({super.key});
@@ -46,13 +47,17 @@ class _AddCanilPageState extends State<AddCanilPage> {
                 final AddStoreUseCase useCase = AddStoreUseCaseImpl(
                     repository: StoreRepositoryImpl(
                         FirestoreStoreImpl(FirebaseFirestore.instance)));
-                await useCase(Store(
+                final id = await useCase(Store(
                     nameController.text,
                     phoneController.text,
                     instagramController.text,
                     addressController.text,
                     cepController.text));
-
+                Toast.show(
+                  "O id do canil é $id",
+                  duration: Toast.lengthShort,
+                  gravity: Toast.bottom,
+                );
                 formKey.currentState!.reset();
               },
               child: const Text("Cadastrar")),
