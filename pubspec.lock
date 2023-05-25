@@ -288,15 +288,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  fluttertoast:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: "3362fbe84cde30bd68875f1e04c214c72b054fd9"
-      resolved-ref: "3362fbe84cde30bd68875f1e04c214c72b054fd9"
-      url: "https://github.com/ponnamkarthik/FlutterToast.git"
-    source: git
-    version: "8.2.1"
   frontend_server_client:
     dependency: transitive
     description:

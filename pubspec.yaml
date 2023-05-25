@@ -28,20 +28,15 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  cloud_firestore: ^4.7.1
-  cupertino_icons: ^1.0.2
-  firebase_core: ^2.13.0
   flutter:
     sdk: flutter
-  json_annotation: ^4.8.1
+  cupertino_icons: ^1.0.2
+  firebase_core: ^2.13.0
+  cloud_firestore: ^4.7.1
   sentry: ^7.6.2
   sentry_flutter: ^7.6.2
   sentry_logging: ^7.6.2
-  # toast: ^0.3.0
-  fluttertoast:
-    git:
-      url: https://github.com/ponnamkarthik/FlutterToast.git
-      ref: 3362fbe84cde30bd68875f1e04c214c72b054fd9
+  json_annotation: ^4.8.1
 
 dev_dependencies:
   build_runner: ^2.4.4

@@ -1,0 +1,1 @@
+web: flutter build web && cd build/webgi
