@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:sentry_logging/sentry_logging.dart';
 
-void main() {
+void main() async {
   runZonedGuarded(() async {
     await SentryFlutter.init(
       (options) {

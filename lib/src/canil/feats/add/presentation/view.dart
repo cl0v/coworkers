@@ -4,7 +4,7 @@ import 'package:coworkers/src/canil/_infra/repositories/store.dart';
 import 'package:coworkers/src/canil/domain/entities/store.dart';
 import 'package:coworkers/src/canil/feats/add/domain/usecases/add_store.dart';
 import 'package:flutter/material.dart';
-import 'package:toast/toast.dart';
+import 'package:flutter/services.dart';
 
 class AddCanilPage extends StatefulWidget {
   const AddCanilPage({super.key});
@@ -53,11 +53,27 @@ class _AddCanilPageState extends State<AddCanilPage> {
                     instagramController.text,
                     addressController.text,
                     cepController.text));
-                Toast.show(
-                  "O id do canil é $id",
-                  duration: Toast.lengthShort,
-                  gravity: Toast.bottom,
-                );
+
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text('O id do canil é $id'),
+                    duration: const Duration(seconds: 10),
+                    backgroundColor: Colors.red,
+                    action: SnackBarAction(
+                        backgroundColor: Colors.blue,
+                        label: 'Copiar ID',
+                        textColor: Colors.white,
+                        onPressed: () async =>
+                            await Clipboard.setData(ClipboardData(text: id))),
+                  ));
+                }
+
+                // Fluttertoast.showToast(
+                //   msg: "O id do canil é $id",
+                //   timeInSecForIosWeb: 10,
+                //   toastLength: Toast.LENGTH_LONG,
+                //   gravity: ToastGravity.BOTTOM,
+                // );
                 formKey.currentState!.reset();
               },
               child: const Text("Cadastrar")),

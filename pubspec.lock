@@ -288,6 +288,15 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  fluttertoast:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: "3362fbe84cde30bd68875f1e04c214c72b054fd9"
+      resolved-ref: "3362fbe84cde30bd68875f1e04c214c72b054fd9"
+      url: "https://github.com/ponnamkarthik/FlutterToast.git"
+    source: git
+    version: "8.2.1"
   frontend_server_client:
     dependency: transitive
     description:
@@ -605,14 +614,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.1"
-  toast:
-    dependency: "direct main"
-    description:
-      name: toast
-      sha256: "12433091e3e5a25b3a25f670126e42547c9ade135de30ad9ace45d1ddccd57c9"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.3.0"
   typed_data:
     dependency: transitive
     description:
