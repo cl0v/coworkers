@@ -11,6 +11,7 @@ class Store {
   final String instagram;
   final String address;
   final String cep;
+  final String obs;
 
   Store(
     this.name,
@@ -18,6 +19,7 @@ class Store {
     this.instagram,
     this.address,
     this.cep,
+    this.obs,
   );
 
   factory Store.fromJson(Map<String, dynamic> json) => _$StoreFromJson(json);

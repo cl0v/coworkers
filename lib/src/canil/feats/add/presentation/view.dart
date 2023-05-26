@@ -20,6 +20,7 @@ class _AddCanilPageState extends State<AddCanilPage> {
   final TextEditingController breedController = TextEditingController();
   final TextEditingController cepController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
+  final TextEditingController obsController = TextEditingController();
 
   String? breed;
 
@@ -44,6 +45,20 @@ class _AddCanilPageState extends State<AddCanilPage> {
           TextFormField(controller: cepController),
           const Text("Endereço"),
           TextFormField(controller: addressController),
+          const Text("Observações"),
+           TextFormField(
+                  controller: obsController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor, insira pelo menos o site que você encontrou o canil';
+                    }
+                    return null;
+                  },
+                  maxLines: 5,
+                  decoration: const InputDecoration(
+                    labelText: 'Site, observações, possiveis problemas e alertas, etc.',
+                  ),
+                ),
           const SizedBox(
             height: 20,
           ),
@@ -57,7 +72,9 @@ class _AddCanilPageState extends State<AddCanilPage> {
                     phoneController.text,
                     instagramController.text,
                     addressController.text,
-                    cepController.text));
+                    cepController.text,
+                    obsController.text,
+                    ));
 
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
