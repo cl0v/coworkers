@@ -7,8 +7,9 @@ part 'store.g.dart';
 class Store {
   final String breed;
   final String name;
-  final String phone;
-  final String instagram;
+  final List<ContactInfo> phones;
+  final ContactInfo whatsapp;
+  final ContactInfo instagram;
   final String address;
   final String cep;
   final String obs;
@@ -16,8 +17,9 @@ class Store {
   Store(
     this.breed,
     this.name,
-    this.phone,
+    this.phones,
     this.instagram,
+    this.whatsapp,
     this.address,
     this.cep,
     this.obs,
@@ -25,4 +27,33 @@ class Store {
 
   factory Store.fromJson(Map<String, dynamic> json) => _$StoreFromJson(json);
   Map<String, dynamic> toJson() => _$StoreToJson(this);
+}
+
+enum ContactValidationStatus {
+  valid,
+  invalid,
+  notFound, //TODO: String.empty => notFound
+  validationRequired
+}
+
+@JsonSerializable()
+class ContactInfo {
+  late String value;
+  late ContactValidationStatus status;
+  final String? message;
+
+  ContactInfo({
+    required this.value,
+    ContactValidationStatus? status,
+    this.message,
+  }) {
+    this.status = status ??
+        (value.isEmpty
+            ? ContactValidationStatus.notFound
+            : ContactValidationStatus.validationRequired);
+  }
+
+  factory ContactInfo.fromJson(Map<String, dynamic> json) =>
+      _$ContactInfoFromJson(json);
+  Map<String, dynamic> toJson() => _$ContactInfoToJson(this);
 }

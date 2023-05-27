@@ -16,6 +16,7 @@ class AddCanilPage extends StatefulWidget {
 class _AddCanilPageState extends State<AddCanilPage> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
+  final TextEditingController whatsappController = TextEditingController();
   final TextEditingController instagramController = TextEditingController();
   final TextEditingController breedController = TextEditingController();
   final TextEditingController cepController = TextEditingController();
@@ -25,6 +26,20 @@ class _AddCanilPageState extends State<AddCanilPage> {
   String? breed;
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+  bool? isWhatsAppSameAsPhone = false;
+
+  void onChanged(bool? value) {
+    setState(() {
+      isWhatsAppSameAsPhone = value;
+    });
+  }
+
+  void clearForm() {
+    breed = breedController.text;
+    formKey.currentState!.reset();
+    breedController.text = breed ?? "";
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,27 +53,41 @@ class _AddCanilPageState extends State<AddCanilPage> {
           const Text("Raça"),
           TextFormField(controller: breedController),
           const Text("Telefone"),
-          TextFormField(controller: phoneController),
+          TextFormField(
+            controller: phoneController,
+            keyboardType: TextInputType.phone,
+          ),
+          CheckboxListTile.adaptive(
+              value: isWhatsAppSameAsPhone, onChanged: onChanged),
+          const Text("WhatsApp"),
+          TextFormField(
+            controller: whatsappController,
+            enabled: !(isWhatsAppSameAsPhone ?? false),
+          ),
           const Text("Instagram"),
           TextFormField(controller: instagramController),
           const Text("CEP"),
-          TextFormField(controller: cepController),
+          TextFormField(
+            controller: cepController,
+            keyboardType: TextInputType.number,
+          ),
           const Text("Endereço"),
           TextFormField(controller: addressController),
           const Text("Observações"),
-           TextFormField(
-                  controller: obsController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor, insira pelo menos o site que você encontrou o canil';
-                    }
-                    return null;
-                  },
-                  maxLines: 5,
-                  decoration: const InputDecoration(
-                    labelText: 'Site, observações, possiveis problemas e alertas, etc.',
-                  ),
-                ),
+          TextFormField(
+            controller: obsController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Por favor, insira pelo menos o site que você encontrou o canil';
+              }
+              return null;
+            },
+            maxLines: 5,
+            decoration: const InputDecoration(
+              labelText:
+                  'Site, observações, possiveis problemas e alertas, etc.',
+            ),
+          ),
           const SizedBox(
             height: 20,
           ),
@@ -69,13 +98,22 @@ class _AddCanilPageState extends State<AddCanilPage> {
                         FirestoreStoreImpl(FirebaseFirestore.instance)));
                 final id = await useCase(Store(
                   breedController.text,
-                    nameController.text,
-                    phoneController.text,
-                    instagramController.text,
-                    addressController.text,
-                    cepController.text,
-                    obsController.text,
-                    ));
+                  nameController.text,
+                  phoneController.text
+                      .split(',')
+                      .map<ContactInfo>((e) => ContactInfo(
+                            value: e.trim(),
+                          ))
+                      .toList(),
+                  ContactInfo(value: instagramController.text),
+                  ContactInfo(
+                      value: isWhatsAppSameAsPhone ?? false
+                          ? phoneController.text
+                          : whatsappController.text),
+                  addressController.text,
+                  cepController.text,
+                  obsController.text,
+                ));
 
                 if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -90,17 +128,7 @@ class _AddCanilPageState extends State<AddCanilPage> {
                             await Clipboard.setData(ClipboardData(text: id))),
                   ));
                 }
-
-                // Fluttertoast.showToast(
-                //   msg: "O id do canil é $id",
-                //   timeInSecForIosWeb: 10,
-                //   toastLength: Toast.LENGTH_LONG,
-                //   gravity: ToastGravity.BOTTOM,
-                // );
-                breed = breedController.text;
-                formKey.currentState!.reset();
-
-                breedController.text = breed ?? "";
+                clearForm();
               },
               child: const Text("Cadastrar")),
         ]
