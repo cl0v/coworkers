@@ -5,7 +5,7 @@ part 'store.g.dart';
 
 @JsonSerializable()
 class Store {
-
+  final String breed;
   final String name;
   final String phone;
   final String instagram;
@@ -14,6 +14,7 @@ class Store {
   final String obs;
 
   Store(
+    this.breed,
     this.name,
     this.phone,
     this.instagram,

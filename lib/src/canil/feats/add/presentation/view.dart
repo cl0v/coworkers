@@ -68,6 +68,7 @@ class _AddCanilPageState extends State<AddCanilPage> {
                     repository: StoreRepositoryImpl(
                         FirestoreStoreImpl(FirebaseFirestore.instance)));
                 final id = await useCase(Store(
+                  breedController.text,
                     nameController.text,
                     phoneController.text,
                     instagramController.text,
