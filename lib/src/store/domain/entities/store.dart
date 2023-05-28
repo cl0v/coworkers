@@ -5,12 +5,14 @@ part 'store.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class Store {
-  final List<String> breeds;
-  final String name;
-  final ContactInfo contact;
-  final String address;
-  final String cep;
-  final String obs;
+  @JsonKey(includeToJson: false)
+  late String id;
+  List<String> breeds;
+  String name;
+  ContactInfo contact;
+  String address;
+  String cep;
+  String obs;
 
   Store({
     required this.breeds,
@@ -25,28 +27,36 @@ class Store {
   Map<String, dynamic> toJson() => _$StoreToJson(this);
 }
 
-
 @JsonSerializable(explicitToJson: true)
 class ContactInfo {
   final List<String> phones;
   final bool isWhatsAppSameAsPhone;
-  late List<ContactDetails> phonesDetails;
-  late ContactDetails whatsappDetails;
-  late ContactDetails instagramDetails;
+  late List<ContactDetails>? phonesDetails;
+  late ContactDetails? whatsappDetails;
+  late ContactDetails? instagramDetails;
 
   ContactInfo({
     required this.phones,
     this.isWhatsAppSameAsPhone = false,
     String? whatsapp,
     String? instagram,
-  }){
-    phonesDetails = phones.map<ContactDetails>((e) => ContactDetails(value: e)).toList();
-    whatsappDetails = ContactDetails(value: isWhatsAppSameAsPhone ? phones[0] : whatsapp ?? '');
-    instagramDetails = ContactDetails(value: instagram ?? '');
+  }) {
+    if (instagram != null) {
+      instagramDetails = ContactDetails(value: instagram);
+    }
+    if (phones.isNotEmpty) {
+      phonesDetails =
+          phones.map<ContactDetails>((e) => ContactDetails(value: e)).toList();
+      if (!isWhatsAppSameAsPhone && whatsapp != null && whatsapp.isNotEmpty) {
+        whatsappDetails = ContactDetails(value: whatsapp);
+      } else {
+        whatsappDetails = ContactDetails(value: phones.first);
+      }
+    }
   }
 
-
-  factory ContactInfo.fromJson(Map<String, dynamic> json) => _$ContactInfoFromJson(json);
+  factory ContactInfo.fromJson(Map<String, dynamic> json) =>
+      _$ContactInfoFromJson(json);
   Map<String, dynamic> toJson() => _$ContactInfoToJson(this);
 }
 

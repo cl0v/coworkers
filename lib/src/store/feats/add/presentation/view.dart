@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:coworkers/src/canil/_external/datasources/firestore_store.dart';
-import 'package:coworkers/src/canil/_infra/repositories/store.dart';
-import 'package:coworkers/src/canil/domain/entities/store.dart';
-import 'package:coworkers/src/canil/feats/add/domain/usecases/add_store.dart';
+import 'package:coworkers/src/store/_external/datasources/firestore_store.dart';
+import 'package:coworkers/src/store/_infra/repositories/store.dart';
+import 'package:coworkers/src/store/domain/entities/store.dart';
+import 'package:coworkers/src/store/feats/add/domain/entities/create_store_result.dart';
+import 'package:coworkers/src/store/feats/add/domain/usecases/add_store.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -44,6 +45,10 @@ class _AddCanilPageState extends State<AddCanilPage> {
     setState(() {
       isWhatsAppSameAsPhone = value ?? isWhatsAppSameAsPhone;
     });
+  }
+
+  void onCopyToClipboard(String id) {
+    Clipboard.setData(ClipboardData(text: id));
   }
 
   void clearForm() {
@@ -108,49 +113,15 @@ class _AddCanilPageState extends State<AddCanilPage> {
               ),
             ),
             const SizedBox(
-              height: 20,
+              height: 80,
             ),
             ElevatedButton(
-                onPressed: () async {
-                  final AddStoreUseCase useCase = AddStoreUseCaseImpl(
-                      repository: StoreRepositoryImpl(
-                          FirestoreStoreImpl(FirebaseFirestore.instance)));
-
-                  final phones =
-                      phoneController.text.split(splitBySpecialsRegex).map((e) => e.trim()).toList();
-                  final id = await useCase(Store(
-                    breeds: breedController.text
-                        .split(splitBySpecialsRegex)
-                        .map((e) => e.trim())
-                        .toList(),
-                    name: nameController.text,
-                    contact: ContactInfo(
-                      phones: phones,
-                      isWhatsAppSameAsPhone: isWhatsAppSameAsPhone,
-                      whatsapp: whatsappController.text,
-                      instagram: instagramController.text,
-                    ),
-                    address: addressController.text,
-                    cep: cepController.text,
-                    obs: obsController.text,
-                  ));
-
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text('O id do canil é $id'),
-                      duration: const Duration(seconds: 10),
-                      backgroundColor: Colors.red,
-                      action: SnackBarAction(
-                          backgroundColor: Colors.blue,
-                          label: 'Copiar ID',
-                          textColor: Colors.white,
-                          onPressed: () async =>
-                              await Clipboard.setData(ClipboardData(text: id))),
-                    ));
-                  }
-                  clearForm();
-                },
-                child: const Text("Cadastrar")),
+              onPressed: onCreateTapped,
+              child: const Text("Cadastrar"),
+            ),
+            const SizedBox(
+              height: 30,
+            ),
           ]
                   .map((e) => Padding(
                       padding: EdgeInsets.symmetric(horizontal: 8), child: e))
@@ -158,5 +129,83 @@ class _AddCanilPageState extends State<AddCanilPage> {
         ),
       ),
     );
+  }
+
+  Future<void> onCreateTapped() async {
+    final phones = phoneController.text
+        .split(splitBySpecialsRegex)
+        .map((e) => e.trim())
+        .toList();
+
+    final Store store = Store(
+      breeds: breedController.text
+          .split(splitBySpecialsRegex)
+          .map((e) => e.trim())
+          .toList(),
+      name: nameController.text,
+      contact: ContactInfo(
+        phones: phones,
+        isWhatsAppSameAsPhone: isWhatsAppSameAsPhone,
+        whatsapp: whatsappController.text,
+        instagram: instagramController.text,
+      ),
+      address: addressController.text,
+      cep: cepController.text,
+      obs: obsController.text,
+    );
+    final result = await create(store);
+
+    if (context.mounted) {
+      late String contentText;
+      late String labelButton;
+      late void Function() onTap;
+
+      switch (result.status) {
+        case StoreCreationStatus.created:
+          contentText = "Canil cadastrado com sucesso! ID: ${result.value}";
+          labelButton = 'Copiar ID';
+          onTap = () => onCopyToClipboard(result.value);
+          clearForm();
+          break;
+        case StoreCreationStatus.error:
+          contentText = result.message ?? "Erro ao cadastrar canil";
+          labelButton = 'Tentar novamente';
+          onTap = () => onRetry(store);
+          break;
+        case StoreCreationStatus.duplicated:
+          contentText = result.message ??
+              "Canil já cadastrado, gostaria de editar os valores?";
+          labelButton = 'Editar';
+          onTap = () => onEdit(result.value);
+          break;
+        default:
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(contentText),
+        duration: const Duration(seconds: 10),
+        backgroundColor: Colors.red,
+        action: SnackBarAction(
+          backgroundColor: Colors.blue,
+          label: labelButton,
+          textColor: Colors.white,
+          onPressed: onTap,
+        ),
+      ));
+    }
+  }
+
+  Future<CreateStoreResult> create(Store store) async {
+    final AddStoreUseCase useCase = AddStoreUseCaseImpl(
+        repository: StoreRepositoryImpl(
+            FirestoreStoreImpl(FirebaseFirestore.instance)));
+
+    return await useCase(store);
+  }
+
+  void onRetry(Store store) {}
+
+  void onEdit(Store store) {
+    nameController.text = store.name;
   }
 }

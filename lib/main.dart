@@ -1,13 +1,12 @@
 import 'dart:async';
-
-import 'package:coworkers/src/canil/feats/add/presentation/view.dart';
+import 'package:coworkers/src/store/feats/add/presentation/view.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:sentry_logging/sentry_logging.dart';
 
-String global_code = 'marcelo';
+String globalCode = 'marcelo';
 
 void main() async {
   // BindingBase.debugZoneErrorsAreFatal = true;
@@ -54,7 +53,9 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: kDebugMode ? const AddCanilPage() : CodePage(),
+      home: 
+      kDebugMode ? const AddCanilPage() : 
+      CodePage(),
     );
   }
 }
@@ -75,11 +76,10 @@ class CodePage extends StatelessWidget {
             onChanged: (code) {
               if (code.length >= 6) {
                 final month = DateTime.now().month;
-                print(month);
-                if (!(code == 'bruno.0.$month}' || code == 'luis.0.$month')) {
+                if (!(code == 'bruno.0.$month' || code == 'luis.0.$month')) {
                   return;
                 }
-                global_code = code;
+                globalCode = code;
                 Navigator.push(
                     context,
                     MaterialPageRoute(

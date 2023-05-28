@@ -1,8 +1,9 @@
 import '../../domain/entities/store.dart';
+import '../../feats/add/domain/entities/create_store_result.dart';
 import '../datasources/store.dart';
 
 abstract class StoreRepository {
-  Future<String> add(Store store);
+  Future<CreateStoreResult> add(Store store);
 }
 
 class StoreRepositoryImpl implements StoreRepository {
@@ -12,7 +13,7 @@ class StoreRepositoryImpl implements StoreRepository {
   StoreRepositoryImpl(this.storeDatasource);
 
   @override
-  Future<String> add(Store store) async {
+  Future<CreateStoreResult> add(Store store) async {
     return storeDatasource.add(store);
   }
 }
