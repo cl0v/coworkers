@@ -11,11 +11,18 @@ class FirestoreStoreImpl implements StoreDatasource {
 
   @override
   Future<String> add(Store store) async {
-    final addMethod = await firestore.collection(collectionPath).add(
-          store.toJson()
-            ..['createdAt'] = Timestamp.now()
-            ..['updatedAt'] = Timestamp.now(),
-        );
+    //TODO: Remover anonym func
+      //TODO: Alguns documentos ainda usam [breed], mas o correto é [breeds]
+      firestore.collection(collectionPath).where('breeds', arrayContains: "Pug").get().then((value) {
+        print(value.docs.length);
+      });
+    return "";
+    final addMethod = await firestore.collection(collectionPath)
+      .add(
+        store.toJson()
+          ..['createdAt'] = Timestamp.now()
+          ..['updatedAt'] = Timestamp.now(),
+      );
     return addMethod.id;
   }
 }
