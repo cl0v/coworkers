@@ -32,9 +32,7 @@ class _AddCanilPageState extends State<AddCanilPage> {
   final TextEditingController obsController =
       TextEditingController(text: kDebugMode ? "Observação de teste" : "");
 
-      @override
- 
-  String? breed;
+  String? breeds;
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
@@ -47,9 +45,9 @@ class _AddCanilPageState extends State<AddCanilPage> {
   }
 
   void clearForm() {
-    breed = breedController.text;
+    breeds = breedController.text;
     formKey.currentState!.reset();
-    breedController.text = breed ?? "";
+    breedController.text = breeds ?? "";
   }
 
   @override
@@ -62,8 +60,7 @@ class _AddCanilPageState extends State<AddCanilPage> {
               children: [
             const Text("Nome do canil"),
             TextFormField(controller: nameController),
-            const Text(
-                "Raças (Separe por vírgula)"),
+            const Text("Raças (Separe por vírgula)"),
             TextFormField(
               controller: breedController,
             ),
@@ -116,23 +113,27 @@ class _AddCanilPageState extends State<AddCanilPage> {
                   final AddStoreUseCase useCase = AddStoreUseCaseImpl(
                       repository: StoreRepositoryImpl(
                           FirestoreStoreImpl(FirebaseFirestore.instance)));
+
+                  final phones = phoneController.text
+                      .split(',')
+                      .map<ContactInfo>((e) => ContactInfo(
+                            value: e.trim(),
+                          ))
+                      .toList();
                   final id = await useCase(Store(
-                    breedController.text,
-                    nameController.text,
-                    phoneController.text
+                    breeds: breedController.text
                         .split(',')
-                        .map<ContactInfo>((e) => ContactInfo(
-                              value: e.trim(),
-                            ))
+                        .map((e) => e.trim())
                         .toList(),
-                    ContactInfo(value: instagramController.text),
-                    ContactInfo(
-                        value: isWhatsAppSameAsPhone ?? false
-                            ? phoneController.text
-                            : whatsappController.text),
-                    addressController.text,
-                    cepController.text,
-                    obsController.text,
+                    name: nameController.text,
+                    phones: phones,
+                    whatsapp: ContactInfo(value: instagramController.text),
+                    instagram: isWhatsAppSameAsPhone ?? false
+                        ? phones[0]
+                        : ContactInfo(value: whatsappController.text),
+                    address: addressController.text,
+                    cep: cepController.text,
+                    obs: obsController.text,
                   ));
 
                   if (context.mounted) {

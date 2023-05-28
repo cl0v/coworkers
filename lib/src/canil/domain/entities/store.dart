@@ -5,7 +5,7 @@ part 'store.g.dart';
 
 @JsonSerializable(explicitToJson: true)
 class Store {
-  final String breed;
+  final List<String> breeds;
   final String name;
   final List<ContactInfo> phones;
   final ContactInfo whatsapp;
@@ -14,16 +14,16 @@ class Store {
   final String cep;
   final String obs;
 
-  Store(
-    this.breed,
-    this.name,
-    this.phones,
-    this.instagram,
-    this.whatsapp,
-    this.address,
-    this.cep,
-    this.obs,
-  );
+  Store({
+    required this.breeds,
+    required this.name,
+    required this.phones,
+    required this.whatsapp,
+    required this.instagram,
+    required this.address,
+    required this.cep,
+    required this.obs,
+  });
 
   factory Store.fromJson(Map<String, dynamic> json) => _$StoreFromJson(json);
   Map<String, dynamic> toJson() => _$StoreToJson(this);

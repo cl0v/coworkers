@@ -7,20 +7,22 @@ part of 'store.dart';
 // **************************************************************************
 
 Store _$StoreFromJson(Map<String, dynamic> json) => Store(
-      json['breed'] as String,
-      json['name'] as String,
-      (json['phones'] as List<dynamic>)
+      breeds:
+          (json['breeds'] as List<dynamic>).map((e) => e as String).toList(),
+      name: json['name'] as String,
+      phones: (json['phones'] as List<dynamic>)
           .map((e) => ContactInfo.fromJson(e as Map<String, dynamic>))
           .toList(),
-      ContactInfo.fromJson(json['instagram'] as Map<String, dynamic>),
-      ContactInfo.fromJson(json['whatsapp'] as Map<String, dynamic>),
-      json['address'] as String,
-      json['cep'] as String,
-      json['obs'] as String,
+      whatsapp: ContactInfo.fromJson(json['whatsapp'] as Map<String, dynamic>),
+      instagram:
+          ContactInfo.fromJson(json['instagram'] as Map<String, dynamic>),
+      address: json['address'] as String,
+      cep: json['cep'] as String,
+      obs: json['obs'] as String,
     );
 
 Map<String, dynamic> _$StoreToJson(Store instance) => <String, dynamic>{
-      'breed': instance.breed,
+      'breeds': instance.breeds,
       'name': instance.name,
       'phones': instance.phones.map((e) => e.toJson()).toList(),
       'whatsapp': instance.whatsapp.toJson(),
