@@ -3,7 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'store.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class Store {
   final String breed;
   final String name;

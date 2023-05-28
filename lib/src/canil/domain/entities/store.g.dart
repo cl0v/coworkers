@@ -22,9 +22,9 @@ Store _$StoreFromJson(Map<String, dynamic> json) => Store(
 Map<String, dynamic> _$StoreToJson(Store instance) => <String, dynamic>{
       'breed': instance.breed,
       'name': instance.name,
-      'phones': instance.phones,
-      'whatsapp': instance.whatsapp,
-      'instagram': instance.instagram,
+      'phones': instance.phones.map((e) => e.toJson()).toList(),
+      'whatsapp': instance.whatsapp.toJson(),
+      'instagram': instance.instagram.toJson(),
       'address': instance.address,
       'cep': instance.cep,
       'obs': instance.obs,

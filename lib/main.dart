@@ -8,8 +8,9 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:sentry_logging/sentry_logging.dart';
 
 void main() async {
+  // BindingBase.debugZoneErrorsAreFatal = true;
   runZonedGuarded(() async {
-    await SentryFlutter.init(
+    SentryFlutter.init(
       (options) {
         options.dsn = kDebugMode
             ? 'https://1072bc02b66c4fff9daf72a04e891d8a@o4505183398068224.ingest.sentry.io/4505245143662592'
@@ -36,7 +37,7 @@ void main() async {
     );
   }, (exception, stackTrace) async {
     debugPrint("Ocorreu uma exception: $exception");
-    await Sentry.captureException(exception, stackTrace: stackTrace);
+    Sentry.captureException(exception, stackTrace: stackTrace);
   });
 }
 
