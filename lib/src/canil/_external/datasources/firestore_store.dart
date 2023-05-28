@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:coworkers/main.dart';
 import 'package:coworkers/src/canil/_infra/datasources/store.dart';
 import 'package:coworkers/src/canil/domain/entities/store.dart';
 import 'package:flutter/foundation.dart';
@@ -15,7 +16,8 @@ class FirestoreStoreImpl implements StoreDatasource {
       .add(
         store.toJson()
           ..['createdAt'] = Timestamp.now()
-          ..['updatedAt'] = Timestamp.now(),
+          ..['updatedAt'] = Timestamp.now()
+          ..['createdBy'] = global_code
       );
     return addMethod.id;
   }

@@ -7,9 +7,7 @@ part 'store.g.dart';
 class Store {
   final List<String> breeds;
   final String name;
-  final List<ContactInfo> phones;
-  final ContactInfo whatsapp;
-  final ContactInfo instagram;
+  final ContactInfo contact;
   final String address;
   final String cep;
   final String obs;
@@ -17,9 +15,7 @@ class Store {
   Store({
     required this.breeds,
     required this.name,
-    required this.phones,
-    required this.whatsapp,
-    required this.instagram,
+    required this.contact,
     required this.address,
     required this.cep,
     required this.obs,
@@ -27,6 +23,31 @@ class Store {
 
   factory Store.fromJson(Map<String, dynamic> json) => _$StoreFromJson(json);
   Map<String, dynamic> toJson() => _$StoreToJson(this);
+}
+
+
+@JsonSerializable(explicitToJson: true)
+class ContactInfo {
+  final List<String> phones;
+  final bool isWhatsAppSameAsPhone;
+  late List<ContactDetails> phonesDetails;
+  late ContactDetails whatsappDetails;
+  late ContactDetails instagramDetails;
+
+  ContactInfo({
+    required this.phones,
+    this.isWhatsAppSameAsPhone = false,
+    String? whatsapp,
+    String? instagram,
+  }){
+    phonesDetails = phones.map<ContactDetails>((e) => ContactDetails(value: e)).toList();
+    whatsappDetails = ContactDetails(value: isWhatsAppSameAsPhone ? phones[0] : whatsapp ?? '');
+    instagramDetails = ContactDetails(value: instagram ?? '');
+  }
+
+
+  factory ContactInfo.fromJson(Map<String, dynamic> json) => _$ContactInfoFromJson(json);
+  Map<String, dynamic> toJson() => _$ContactInfoToJson(this);
 }
 
 enum ContactValidationStatus {
@@ -37,12 +58,12 @@ enum ContactValidationStatus {
 }
 
 @JsonSerializable()
-class ContactInfo {
+class ContactDetails {
   late String value;
   late ContactValidationStatus status;
   final String? message;
 
-  ContactInfo({
+  ContactDetails({
     required this.value,
     ContactValidationStatus? status,
     this.message,
@@ -53,7 +74,7 @@ class ContactInfo {
             : ContactValidationStatus.validationRequired);
   }
 
-  factory ContactInfo.fromJson(Map<String, dynamic> json) =>
-      _$ContactInfoFromJson(json);
-  Map<String, dynamic> toJson() => _$ContactInfoToJson(this);
+  factory ContactDetails.fromJson(Map<String, dynamic> json) =>
+      _$ContactDetailsFromJson(json);
+  Map<String, dynamic> toJson() => _$ContactDetailsToJson(this);
 }

@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:sentry_logging/sentry_logging.dart';
 
+String global_code = 'marcelo';
+
 void main() async {
   // BindingBase.debugZoneErrorsAreFatal = true;
   runZonedGuarded(() async {
@@ -52,11 +54,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: 
-      
-      kDebugMode? 
-      const AddCanilPage():
-      CodePage(),
+      home: kDebugMode ? const AddCanilPage() : CodePage(),
     );
   }
 }
@@ -74,12 +72,20 @@ class CodePage extends StatelessWidget {
           width: 200,
           child: TextField(
             decoration: const InputDecoration(hintText: 'Código de login'),
-            onChanged: (code) => code.length == 6 && code == "0luis0"
-                ? Navigator.push(
+            onChanged: (code) {
+              if (code.length >= 6) {
+                final month = DateTime.now().month;
+                print(month);
+                if (!(code == 'bruno.0.$month}' || code == 'luis.0.$month')) {
+                  return;
+                }
+                global_code = code;
+                Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const AddCanilPage()))
-                : null,
+                        builder: (context) => const AddCanilPage()));
+              }
+            },
           ),
         ),
       ),

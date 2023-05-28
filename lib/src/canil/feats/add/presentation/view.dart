@@ -14,6 +14,8 @@ class AddCanilPage extends StatefulWidget {
   State<AddCanilPage> createState() => _AddCanilPageState();
 }
 
+final splitBySpecialsRegex = RegExp(r'[,/;]');
+
 class _AddCanilPageState extends State<AddCanilPage> {
   final TextEditingController nameController =
       TextEditingController(text: kDebugMode ? "Canil de teste" : "");
@@ -36,11 +38,11 @@ class _AddCanilPageState extends State<AddCanilPage> {
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
-  bool? isWhatsAppSameAsPhone = false;
+  bool isWhatsAppSameAsPhone = false;
 
   void onChanged(bool? value) {
     setState(() {
-      isWhatsAppSameAsPhone = value;
+      isWhatsAppSameAsPhone = value ?? isWhatsAppSameAsPhone;
     });
   }
 
@@ -76,10 +78,10 @@ class _AddCanilPageState extends State<AddCanilPage> {
               value: isWhatsAppSameAsPhone,
               onChanged: onChanged,
             ),
-            const Text("WhatsApp"),
+            const Text("WhatsApp para negócios"),
             TextFormField(
               controller: whatsappController,
-              enabled: !(isWhatsAppSameAsPhone ?? false),
+              enabled: !(isWhatsAppSameAsPhone),
             ),
             const Text("Instagram"),
             TextFormField(controller: instagramController),
@@ -114,23 +116,20 @@ class _AddCanilPageState extends State<AddCanilPage> {
                       repository: StoreRepositoryImpl(
                           FirestoreStoreImpl(FirebaseFirestore.instance)));
 
-                  final phones = phoneController.text
-                      .split(',')
-                      .map<ContactInfo>((e) => ContactInfo(
-                            value: e.trim(),
-                          ))
-                      .toList();
+                  final phones =
+                      phoneController.text.split(splitBySpecialsRegex).map((e) => e.trim()).toList();
                   final id = await useCase(Store(
                     breeds: breedController.text
-                        .split(',')
+                        .split(splitBySpecialsRegex)
                         .map((e) => e.trim())
                         .toList(),
                     name: nameController.text,
-                    phones: phones,
-                    whatsapp: ContactInfo(value: instagramController.text),
-                    instagram: isWhatsAppSameAsPhone ?? false
-                        ? phones[0]
-                        : ContactInfo(value: whatsappController.text),
+                    contact: ContactInfo(
+                      phones: phones,
+                      isWhatsAppSameAsPhone: isWhatsAppSameAsPhone,
+                      whatsapp: whatsappController.text,
+                      instagram: instagramController.text,
+                    ),
                     address: addressController.text,
                     cep: cepController.text,
                     obs: obsController.text,
