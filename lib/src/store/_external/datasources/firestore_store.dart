@@ -42,12 +42,8 @@ class FirestoreStoreImpl implements StoreDatasource {
     }
   }
 
-  //TODO: Talvez passar também o motivo da duplicação
+  // Checa se existe algum contato com o mesmo telefone ou instagram
   Future<Store?> checkForDuplicate(Store store) async {
-    //TODO: Cadastrar sistema de duplicados:
-    return null;
-    /*
-
     for (var phone in store.contact.phones) {
       final query = await firestore
           .collection(collectionPath)
@@ -66,6 +62,5 @@ class FirestoreStoreImpl implements StoreDatasource {
       return FirestoreStoreMapper.fromDoc(query.docs.first);
     }
     return null;
-    */
   }
 }

@@ -166,7 +166,8 @@ class _AddCanilPageState extends State<AddCanilPage> {
       late String labelButton;
       late void Function() onTap;
       bool hasButton = false;
-
+      Color snackColor = Colors.green;
+      
       switch (result.status) {
         case StoreCreationStatus.created:
           contentText = "Canil cadastrado com sucesso! ID: ${result.value}";
@@ -176,14 +177,16 @@ class _AddCanilPageState extends State<AddCanilPage> {
           clearForm();
           break;
         case StoreCreationStatus.error:
-          contentText = result.message ?? "Erro ao cadastrar canil";
+          contentText = result.message ?? "Ocorreu um erro ao cadastrar canil";
           labelButton = 'Tentar novamente';
           onTap = () => onRetry(store);
+          snackColor = Colors.red;
           break;
         case StoreCreationStatus.duplicated:
           contentText = result.message ??
-              "Canil já cadastrado, gostaria de editar os valores?";
-          labelButton = 'Editar';
+              "Canil já cadastrado.";
+          labelButton = 'Revisar e Editar';
+          snackColor = Colors.orange;
           onTap = () => onEdit(result.value);
           break;
         default:
@@ -192,7 +195,7 @@ class _AddCanilPageState extends State<AddCanilPage> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(contentText),
         duration: const Duration(seconds: 10),
-        backgroundColor: Colors.red,
+        backgroundColor: snackColor,
         action: hasButton
             ? SnackBarAction(
                 backgroundColor: Colors.blue,
