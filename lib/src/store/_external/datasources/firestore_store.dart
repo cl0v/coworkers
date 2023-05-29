@@ -4,7 +4,6 @@ import 'package:coworkers/src/store/_infra/datasources/store.dart';
 import 'package:coworkers/src/store/domain/entities/store.dart';
 import 'package:coworkers/src/store/feats/add/domain/entities/create_store_result.dart';
 import 'package:flutter/foundation.dart';
-
 import '../mappers/firestore_store.dart';
 
 class FirestoreStoreImpl implements StoreDatasource {
@@ -47,6 +46,8 @@ class FirestoreStoreImpl implements StoreDatasource {
   Future<Store?> checkForDuplicate(Store store) async {
     //TODO: Cadastrar sistema de duplicados:
     return null;
+    /*
+
     for (var phone in store.contact.phones) {
       final query = await firestore
           .collection(collectionPath)
@@ -65,5 +66,6 @@ class FirestoreStoreImpl implements StoreDatasource {
       return FirestoreStoreMapper.fromDoc(query.docs.first);
     }
     return null;
+    */
   }
 }

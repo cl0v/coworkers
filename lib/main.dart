@@ -53,9 +53,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: 
-      kDebugMode ? const AddCanilPage() : 
-      CodePage(),
+      home: kDebugMode ? const AddCanilPage() : CodePage(),
     );
   }
 }
@@ -76,14 +74,16 @@ class CodePage extends StatelessWidget {
             onChanged: (code) {
               if (code.length >= 6) {
                 final month = DateTime.now().month;
-                if (!(code == 'bruno.0.$month' || code == 'luis.0.$month')) {
+                if (!(code == 'pedro.0.$month' || code == 'luis.0.$month')) {
                   return;
                 }
                 globalCode = code;
                 Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const AddCanilPage()));
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AddCanilPage(),
+                  ),
+                );
               }
             },
           ),

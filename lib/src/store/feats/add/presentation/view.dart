@@ -19,9 +19,13 @@ final splitBySpecialsRegex = RegExp(r'[,/;]');
 
 class _AddCanilPageState extends State<AddCanilPage> {
   final TextEditingController nameController =
-      TextEditingController(text: kDebugMode ? "Canil de teste" : "");
+      TextEditingController(
+        // text: kDebugMode ? "Canil de teste" : ""
+        );
   final TextEditingController phoneController =
-      TextEditingController(text: kDebugMode ? "00000000000, 2222222222" : "");
+      TextEditingController(
+        // text: kDebugMode ? "00000000000, 2222222222" : ""
+        );
   final TextEditingController whatsappController =
       TextEditingController(text: kDebugMode ? "11999999999" : "");
   final TextEditingController instagramController =
@@ -113,18 +117,19 @@ class _AddCanilPageState extends State<AddCanilPage> {
               ),
             ),
             const SizedBox(
-              height: 80,
+              height: 30,
             ),
             ElevatedButton(
               onPressed: onCreateTapped,
               child: const Text("Cadastrar"),
             ),
             const SizedBox(
-              height: 30,
+              height: 80,
             ),
           ]
                   .map((e) => Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8), child: e))
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: e))
                   .toList()),
         ),
       ),
@@ -153,18 +158,21 @@ class _AddCanilPageState extends State<AddCanilPage> {
       cep: cepController.text,
       obs: obsController.text,
     );
+    
     final result = await create(store);
 
     if (context.mounted) {
       late String contentText;
       late String labelButton;
       late void Function() onTap;
+      bool hasButton = false;
 
       switch (result.status) {
         case StoreCreationStatus.created:
           contentText = "Canil cadastrado com sucesso! ID: ${result.value}";
           labelButton = 'Copiar ID';
           onTap = () => onCopyToClipboard(result.value);
+          hasButton = true;
           clearForm();
           break;
         case StoreCreationStatus.error:
@@ -185,12 +193,14 @@ class _AddCanilPageState extends State<AddCanilPage> {
         content: Text(contentText),
         duration: const Duration(seconds: 10),
         backgroundColor: Colors.red,
-        action: SnackBarAction(
-          backgroundColor: Colors.blue,
-          label: labelButton,
-          textColor: Colors.white,
-          onPressed: onTap,
-        ),
+        action: hasButton
+            ? SnackBarAction(
+                backgroundColor: Colors.blue,
+                label: labelButton,
+                textColor: Colors.white,
+                onPressed: onTap,
+              )
+            : null,
       ));
     }
   }
