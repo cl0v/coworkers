@@ -14,12 +14,9 @@ class FirestoreStoreImpl implements StoreDatasource {
 
   @override
   Future<CreateStoreResult> add(Store store) async {
-    final Store? duplicate = await checkForDuplicate(store);
+    final CreateStoreResult? duplicate = await checkForDuplicate(store);
     if (duplicate != null) {
-      return CreateStoreResult(
-        value: store,
-        status: StoreCreationStatus.duplicated,
-      );
+      return duplicate;
     }
     try {
       final addMethod = await firestore.collection(collectionPath).add(
@@ -43,23 +40,33 @@ class FirestoreStoreImpl implements StoreDatasource {
   }
 
   // Checa se existe algum contato com o mesmo telefone ou instagram
-  Future<Store?> checkForDuplicate(Store store) async {
+  Future<CreateStoreResult?> checkForDuplicate(Store store) async {
     for (var phone in store.contact.phones) {
+      if (phone.isEmpty) continue;
       final query = await firestore
           .collection(collectionPath)
           .where('contact.phones', arrayContains: phone)
           .get();
       if (query.docs.isNotEmpty) {
-        return FirestoreStoreMapper.fromDoc(query.docs.first);
+        return CreateStoreResult(
+          value: FirestoreStoreMapper.fromDoc(query.docs.first),
+          status: StoreCreationStatus.duplicated,
+          message: "Telefone já cadastrado",
+        );
       }
     }
+    if(store.contact.instagramDetails?.value.isEmpty ?? true) return null;
     final query = await firestore
         .collection(collectionPath)
         .where('contact.instagramDetails.value',
             isEqualTo: store.contact.instagramDetails?.value)
         .get();
     if (query.docs.isNotEmpty) {
-      return FirestoreStoreMapper.fromDoc(query.docs.first);
+      return CreateStoreResult(
+        value: FirestoreStoreMapper.fromDoc(query.docs.first),
+        status: StoreCreationStatus.duplicated,
+        message: "Instagram já cadastrado",
+      );
     }
     return null;
   }

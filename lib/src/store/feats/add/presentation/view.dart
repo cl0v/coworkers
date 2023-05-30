@@ -18,14 +18,12 @@ class AddCanilPage extends StatefulWidget {
 final splitBySpecialsRegex = RegExp(r'[,/;]');
 
 class _AddCanilPageState extends State<AddCanilPage> {
-  final TextEditingController nameController =
-      TextEditingController(
-        // text: kDebugMode ? "Canil de teste" : ""
-        );
-  final TextEditingController phoneController =
-      TextEditingController(
-        // text: kDebugMode ? "00000000000, 2222222222" : ""
-        );
+  final TextEditingController nameController = TextEditingController(
+      // text: kDebugMode ? "Canil de teste" : ""
+      );
+  final TextEditingController phoneController = TextEditingController(
+      // text: kDebugMode ? "00000000000, 2222222222" : ""
+      );
   final TextEditingController whatsappController =
       TextEditingController(text: kDebugMode ? "11999999999" : "");
   final TextEditingController instagramController =
@@ -158,7 +156,7 @@ class _AddCanilPageState extends State<AddCanilPage> {
       cep: cepController.text,
       obs: obsController.text,
     );
-    
+
     final result = await create(store);
 
     if (context.mounted) {
@@ -167,7 +165,7 @@ class _AddCanilPageState extends State<AddCanilPage> {
       late void Function() onTap;
       bool hasButton = false;
       Color snackColor = Colors.green;
-      
+
       switch (result.status) {
         case StoreCreationStatus.created:
           contentText = "Canil cadastrado com sucesso! ID: ${result.value}";
@@ -183,18 +181,18 @@ class _AddCanilPageState extends State<AddCanilPage> {
           snackColor = Colors.red;
           break;
         case StoreCreationStatus.duplicated:
-          contentText = result.message ??
-              "Canil já cadastrado.";
+          contentText = result.message ?? "Canil já cadastrado.";
           labelButton = 'Revisar e Editar';
           snackColor = Colors.orange;
           onTap = () => onEdit(result.value);
           break;
         default:
       }
-
+      ScaffoldMessenger.of(context).clearSnackBars();
+      
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(contentText),
-        duration: const Duration(seconds: 10),
+        duration: const Duration(seconds: 6),
         backgroundColor: snackColor,
         action: hasButton
             ? SnackBarAction(
