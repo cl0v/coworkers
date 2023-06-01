@@ -1,0 +1,1 @@
+final splitBySpecialsRegex = RegExp(r'[,/;]');

@@ -8,6 +8,8 @@ import 'package:sentry_logging/sentry_logging.dart';
 
 String globalCode = 'marcelo';
 
+//TODO: Adicionar cores do lulu da pomerania (https://petcaramelo.com/curiosidades/todas-cores-do-lulu-da-pomerania/)
+
 void main() async {
   // BindingBase.debugZoneErrorsAreFatal = true;
   runZonedGuarded(() async {

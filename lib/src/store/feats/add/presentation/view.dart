@@ -4,9 +4,15 @@ import 'package:coworkers/src/store/_infra/repositories/store.dart';
 import 'package:coworkers/src/store/domain/entities/store.dart';
 import 'package:coworkers/src/store/feats/add/domain/entities/create_store_result.dart';
 import 'package:coworkers/src/store/feats/add/domain/usecases/add_store.dart';
-import 'package:flutter/foundation.dart';
+import 'package:coworkers/src/store/feats/add/domain/usecases/check_instagram_duplication.dart';
+import 'package:coworkers/src/store/feats/add/domain/usecases/split_phone.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+import '../../../../utils/regex.dart';
+import '../domain/usecases/check_phones_duplication.dart';
+
+enum _FieldValitation { instagram, phone }
 
 class AddCanilPage extends StatefulWidget {
   const AddCanilPage({super.key});
@@ -15,33 +21,24 @@ class AddCanilPage extends StatefulWidget {
   State<AddCanilPage> createState() => _AddCanilPageState();
 }
 
-final splitBySpecialsRegex = RegExp(r'[,/;]');
-
 class _AddCanilPageState extends State<AddCanilPage> {
-  final TextEditingController nameController = TextEditingController(
-      // text: kDebugMode ? "Canil de teste" : ""
-      );
-  final TextEditingController phoneController = TextEditingController(
-      // text: kDebugMode ? "00000000000, 2222222222" : ""
-      );
-  final TextEditingController whatsappController =
-      TextEditingController(text: kDebugMode ? "11999999999" : "");
-  final TextEditingController instagramController =
-      TextEditingController(text: kDebugMode ? "canil_de_teste" : "");
-  final TextEditingController breedController =
-      TextEditingController(text: kDebugMode ? "Pug" : "");
-  final TextEditingController cepController =
-      TextEditingController(text: kDebugMode ? "00000000" : "");
-  final TextEditingController addressController =
-      TextEditingController(text: kDebugMode ? "Rua de teste, 123" : "");
-  final TextEditingController obsController =
-      TextEditingController(text: kDebugMode ? "Observação de teste" : "");
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController whatsappController = TextEditingController();
+  final TextEditingController instagramController = TextEditingController();
+  final TextEditingController breedController = TextEditingController();
+  final TextEditingController cepController = TextEditingController();
+  final TextEditingController addressController = TextEditingController();
+  final TextEditingController obsController = TextEditingController();
 
   String? breeds;
 
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   bool isWhatsAppSameAsPhone = false;
+
+  final repository =
+      StoreRepositoryImpl(FirestoreStoreImpl(FirebaseFirestore.instance));
 
   void onChanged(bool? value) {
     setState(() {
@@ -62,69 +59,86 @@ class _AddCanilPageState extends State<AddCanilPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => formKey.currentState!.reset(),
+        label: const Text("Limpar formulario"),
+        icon: const Icon(Icons.delete),
+      ),
       body: Form(
         key: formKey,
         child: SingleChildScrollView(
           child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-            const Text("Nome do canil"),
-            TextFormField(controller: nameController),
-            const Text("Raças (Separe por vírgula)"),
-            TextFormField(
-              controller: breedController,
-            ),
-            const Text("Telefones, separados por vírgula (,)"),
-            TextFormField(
-              controller: phoneController,
-              keyboardType: TextInputType.phone,
-            ),
-            CheckboxListTile.adaptive(
-              title: const Text(
-                  "WhatsApp é o mesmo que o primeiro telefone da lista?"),
-              controlAffinity: ListTileControlAffinity.leading,
-              value: isWhatsAppSameAsPhone,
-              onChanged: onChanged,
-            ),
-            const Text("WhatsApp para negócios"),
-            TextFormField(
-              controller: whatsappController,
-              enabled: !(isWhatsAppSameAsPhone),
-            ),
-            const Text("Instagram"),
-            TextFormField(controller: instagramController),
-            const Text("CEP"),
-            TextFormField(
-              controller: cepController,
-              keyboardType: TextInputType.number,
-            ),
-            const Text("Endereço"),
-            TextFormField(controller: addressController),
-            const Text("Observações"),
-            TextFormField(
-              controller: obsController,
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Por favor, insira pelo menos o site que você encontrou o canil';
-                }
-                return null;
-              },
-              maxLines: 5,
-              decoration: const InputDecoration(
-                labelText:
-                    'Site, observações, possiveis problemas e alertas, etc.',
-              ),
-            ),
-            const SizedBox(
-              height: 30,
-            ),
-            ElevatedButton(
-              onPressed: onCreateTapped,
-              child: const Text("Cadastrar"),
-            ),
-            const SizedBox(
-              height: 80,
-            ),
-          ]
+                const Text("Telefones, separados por vírgula (,)"),
+                TextFormField(
+                  controller: phoneController,
+                  keyboardType: TextInputType.phone,
+                  onChanged: (value) =>
+                      checkDuplication(_FieldValitation.phone, value),
+                ),
+                CheckboxListTile.adaptive(
+                  title: const Text(
+                      "WhatsApp é o mesmo que o primeiro telefone da lista?"),
+                  controlAffinity: ListTileControlAffinity.leading,
+                  value: isWhatsAppSameAsPhone,
+                  onChanged: onChanged,
+                ),
+                const Text("WhatsApp para negócios"),
+                TextFormField(
+                  controller: whatsappController,
+                  enabled: !(isWhatsAppSameAsPhone),
+                ),
+                const Text("Instagram"),
+                TextFormField(
+                  controller: instagramController,
+                  onChanged: (value) =>
+                      checkDuplication(_FieldValitation.instagram, value),
+                ),
+                const Text("Nome do canil"),
+                TextFormField(controller: nameController),
+                const Text("Raças (Separe por vírgula)"),
+                TextFormField(
+                  controller: breedController,
+                ),
+                const Text("CEP"),
+                TextFormField(
+                  controller: cepController,
+                  keyboardType: TextInputType.number,
+                ),
+                const Text("Endereço"),
+                TextFormField(controller: addressController),
+                const Text("Observações"),
+                TextFormField(
+                  controller: obsController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor, insira pelo menos o site que você encontrou o canil';
+                    }
+                    return null;
+                  },
+                  maxLines: 5,
+                  decoration: const InputDecoration(
+                    labelText:
+                        'Site, observações, possiveis problemas e alertas, etc.',
+                  ),
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
+                ElevatedButton(
+                  onPressed: onCreateTapped,
+                  child: const SizedBox(
+                    height: 56,
+                    width: double.infinity,
+                    child: Center(child: Text("Cadastrar")),
+                  ),
+                ),
+                const SizedBox(
+                  height: 80,
+                ),
+              ]
                   .map((e) => Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: e))
@@ -135,10 +149,7 @@ class _AddCanilPageState extends State<AddCanilPage> {
   }
 
   Future<void> onCreateTapped() async {
-    final phones = phoneController.text
-        .split(splitBySpecialsRegex)
-        .map((e) => e.trim())
-        .toList();
+    final phones = SplitPhone(phoneController.text).call();
 
     final Store store = Store(
       breeds: breedController.text
@@ -189,7 +200,7 @@ class _AddCanilPageState extends State<AddCanilPage> {
         default:
       }
       ScaffoldMessenger.of(context).clearSnackBars();
-      
+
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(contentText),
         duration: const Duration(seconds: 6),
@@ -206,10 +217,52 @@ class _AddCanilPageState extends State<AddCanilPage> {
     }
   }
 
+  checkDuplication(_FieldValitation field, String value) async {
+    switch (field) {
+      case _FieldValitation.instagram:
+        if (value.isEmpty) {
+          return;
+        } else if (value.length < 4) {
+          return;
+        } else {
+          CheckInstagramDuplicationUseCase usecase =
+              CheckInstagramDuplicationUseCaseImpl(repository);
+          final result = await usecase(value);
+          if (result != null && context.mounted) {
+            ScaffoldMessenger.of(context).clearSnackBars();
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(result),
+              duration: const Duration(seconds: 6),
+              backgroundColor: Colors.red,
+            ));
+          }
+        }
+        break;
+      case _FieldValitation.phone:
+        if (value.isEmpty) {
+          return;
+        } else if (value.length < "3398525199".length) {
+          return;
+        } else {
+          CheckPhonesDuplicationUseCase usecase =
+              CheckPhonesDuplicationUseCaseImpl(repository);
+          final result = await usecase(value);
+          if (result != null && context.mounted) {
+            ScaffoldMessenger.of(context).clearSnackBars();
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+              content: Text(result),
+              duration: const Duration(seconds: 6),
+              backgroundColor: Colors.red,
+            ));
+          }
+        }
+        break;
+      default:
+    }
+  }
+
   Future<CreateStoreResult> create(Store store) async {
-    final AddStoreUseCase useCase = AddStoreUseCaseImpl(
-        repository: StoreRepositoryImpl(
-            FirestoreStoreImpl(FirebaseFirestore.instance)));
+    final AddStoreUseCase useCase = AddStoreUseCaseImpl(repository: repository);
 
     return await useCase(store);
   }
