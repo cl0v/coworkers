@@ -76,7 +76,8 @@ class CodePage extends StatelessWidget {
             onChanged: (code) {
               if (code.length >= 6) {
                 final month = DateTime.now().month;
-                if (!(code == 'pedro.0.$month' || code == 'luis.0.$month')) {
+                final day = DateTime.now().day;
+                if (!(code == 'pedro.$day.$month' || code == 'luis.$day.$month')) {
                   return;
                 }
                 globalCode = code;
