@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:sentry_logging/sentry_logging.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 
 String globalCode = 'marcelo';
 
@@ -25,6 +26,8 @@ void main() async {
       },
       appRunner: () async {
         WidgetsFlutterBinding.ensureInitialized();
+
+        usePathUrlStrategy();
         await Firebase.initializeApp(
           options: const FirebaseOptions(
             apiKey: "AIzaSyAcAgXbMZZo5L6yeSa3a3y7TBy12IcAgmY",
