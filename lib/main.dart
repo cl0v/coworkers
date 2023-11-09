@@ -38,7 +38,10 @@ void main() async {
             measurementId: "G-QYCH3WSN61",
           ),
         );
-        runApp(const MyApp());
+
+        // await Firebase
+        
+        runApp( const MyApp());
       },
     );
   }, (exception, stackTrace) async {

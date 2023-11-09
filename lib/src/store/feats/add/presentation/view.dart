@@ -8,6 +8,7 @@ import 'package:coworkers/src/store/feats/add/domain/usecases/check_instagram_du
 import 'package:coworkers/src/store/feats/add/domain/usecases/split_phone.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 
 import '../../../../utils/regex.dart';
 import '../domain/usecases/check_phones_duplication.dart';
@@ -36,6 +37,12 @@ class _AddCanilPageState extends State<AddCanilPage> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   bool isWhatsAppSameAsPhone = false;
+
+  var phoneMaskFormatter = MaskTextInputFormatter(
+    mask: '(##) #####-####',
+    filter: {"#": RegExp(r'[0-9]')},
+    type: MaskAutoCompletionType.lazy,
+  );
 
   final repository =
       StoreRepositoryImpl(FirestoreStoreImpl(FirebaseFirestore.instance));
@@ -75,6 +82,7 @@ class _AddCanilPageState extends State<AddCanilPage> {
                 TextFormField(
                   controller: phoneController,
                   keyboardType: TextInputType.phone,
+                  inputFormatters: [phoneMaskFormatter],
                   onChanged: (value) =>
                       checkDuplication(_FieldValitation.phone, value),
                 ),
